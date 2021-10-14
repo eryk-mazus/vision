@@ -1,8 +1,6 @@
 import torch
 from torch import nn
-from typing import List, Optional
-
-device = 'cuda' if torch.cuda.is_available() else 'cpu'
+from typing import List
 
 # Shortcut connection with 1x1 conv for adjusting
 # the number of channels, and stride to adjust the size
@@ -93,7 +91,13 @@ class ResNet(nn.Module):
         out = torch.flatten(out, 1)
         out = self.fc(out)
         return out
-    
+
+def resnet34(input_channels, num_classes):
+    return ResNet(ResidualLayer, input_channels, [3,4,6,3], [64,128,256,512], num_classes)
+
+def resnet50(input_channels, num_classes):
+    return ResNet(BottleneckLayer, input_channels, [3,4,6,3], [64,128,256,512], num_classes)
+
 
 if __name__ == "__main__":
     # tests
