@@ -1,7 +1,7 @@
 import torch
 from torch import nn
 from typing import List, Optional
-
+ 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 # Shortcut connection with 1x1 conv for adjusting
@@ -112,6 +112,3 @@ if __name__ == "__main__":
     output = m(example)
 
     print('done')
-
-# TODO:
-# incorrect # of channels in bottleneck version
