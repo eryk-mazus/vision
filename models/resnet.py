@@ -1,12 +1,6 @@
 import torch
 from torch import nn
-<<<<<<< HEAD
-from typing import List, Optional
- 
-device = 'cuda' if torch.cuda.is_available() else 'cpu'
-=======
 from typing import List
->>>>>>> a9e6ba98231577e597446a477041dacb73bdd19e
 
 # Shortcut connection with 1x1 conv for adjusting
 # the number of channels, and stride to adjust the size
@@ -24,8 +18,8 @@ class ResidualLayer(nn.Module):
 
     def __init__(self, in_channels: int, out_channels: int, stride: int):
         super(ResidualLayer, self).__init__()
-        self.conv1 = nn.Conv2d(in_channels, out_channels, kernel_size=3, padding=1, stride=stride)
-        self.conv2 = nn.Conv2d(out_channels, out_channels, kernel_size=3, padding=1, stride=1)
+        self.conv1 = nn.Conv2d(in_channels, out_channels, kernel_size=3, padding=1, stride=stride, bias=False)
+        self.conv2 = nn.Conv2d(out_channels, out_channels, kernel_size=3, padding=1, stride=1, bias=False)
         self.bn1 = nn.BatchNorm2d(out_channels)
         self.bn2 = nn.BatchNorm2d(out_channels)
         self.relu = nn.ReLU(inplace=True)
@@ -104,14 +98,5 @@ def resnet34(input_channels, num_classes):
 def resnet50(input_channels, num_classes):
     return ResNet(BottleneckLayer, input_channels, [3,4,6,3], [64,128,256,512], num_classes)
 
-
-if __name__ == "__main__":
-    # tests
-    BATCH_SIZE = 2
-    IMG_CHANNELS = 3
-    example = torch.randn(BATCH_SIZE, IMG_CHANNELS, 224, 224)
-    m = ResNet(block=ResidualLayer, input_img_channels=IMG_CHANNELS, n_blocks=[3,4,6,3], n_channels=[64,128,256,512], num_classes=10)
-    # m = ResNet(block=BottleneckLayer, input_img_channels=IMG_CHANNELS, n_blocks=[3,4,6,3], n_channels=[64,128,256,512], num_classes=10)
-    output = m(example)
-
-    print('done')
+def resnet101(input_channels, num_classes):
+    return ResNet(BottleneckLayer, input_channels, [3,4,23,3], [64,128,256,512], num_classes)
