@@ -19,8 +19,6 @@ parser.add_argument('--batch_size', default=32, type=int,
                     help='mini batch size for sgd')
 parser.add_argument('--output_dir', default='./output/', type=str,
                     help='where to save the model and store logs')
-parser.add_argument('--logging_steps', default=100, type=int,
-                    help='# of update steps between consecutive logs')
 
 args = parser.parse_args()
 
@@ -43,5 +41,6 @@ if __name__ == "__main__":
     model = get_arch(args.model)
 
     trainer = Trainer(trainset, testset, model, args.epochs, args.batch_size,
-                      args.output_dir, args.logging_steps)
+                      args.output_dir)
     trainer.train()
+
