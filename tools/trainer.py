@@ -70,13 +70,13 @@ class Trainer():
                     # statistics
                     running_loss += loss.item() * inputs.size(0)
                     running_corrects += torch.sum(preds == labels.data)
-                if phase == 'val': # ?
-                    scheduler.step()
 
                 epoch_loss = running_loss / self.dataset_sizes[phase]
                 epoch_acc = running_corrects.double() / self.dataset_sizes[phase]
-
                 print('{} Loss: {:.4f} Acc: {:.4f}'.format(phase, epoch_loss, epoch_acc))
+
+                if phase == 'val':
+                    scheduler.step(epoch_loss)
 
                 # deep copy the model
                 if phase == 'val' and epoch_acc > best_acc:
