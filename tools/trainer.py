@@ -6,23 +6,22 @@ import torch.optim as optim
 class Trainer():
     def __init__(
         self,
-        trainset,
-        testset,
+        dataloader,
         model,
         epochs,
         batch_size,
+        valid_size,
         output_dir,
     ):
         self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
         self.epochs = epochs
-
-        self.trainloader = torch.utils.data.DataLoader(trainset, batch_size=batch_size, shuffle=True, num_workers=2)
-        self.testloader = torch.utils.data.DataLoader(testset, batch_size=batch_size, shuffle=False, num_workers=2)
-        self.num_classes = len(trainset.classes)
+        self.trainloader, self.validloader, self.testloader = dataloader.get_torch_loaders(valid_size, batch_size,
+                                                                pin_memory=(True if self.device == 'cuda' else False))
+        self.num_classes = dataloader.num_classes
         self.input_channels = self.trainloader.dataset.data.shape[-1]
         self.dataset_sizes = {
-            'train': len(trainset),
-            'val': len(testset)
+            'train': dataloader.train_size,
+            'val': dataloader.valid_size
         }
 
         self.model = model(self.input_channels, self.num_classes)
