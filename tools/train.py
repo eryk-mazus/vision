@@ -20,12 +20,14 @@ parser.add_argument('--valid_size', default=0.2, type=float,
                     help='validation dataset size')
 parser.add_argument('--output_dir', default='./output/', type=str,
                     help='where to save the model and store logs')
+parser.add_argument('--pin_memory', default=False, type=bool,
+                    help='')
 args = parser.parse_args()
 
 if __name__ == "__main__":
     cifar_loader = CIFAR_100_Loader()
     model = get_arch(args.model)
     trainer = Trainer(cifar_loader, model, args.epochs, args.batch_size,
-                      args.valid_size, args.output_dir)
+                      args.valid_size, args.pin_memory, args.output_dir)
     trainer.train()
 

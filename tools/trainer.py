@@ -1,7 +1,9 @@
 import copy
+import matplotlib.pyplot as plt
+from tqdm import tqdm
 import torch
-from torch import nn
 import torch.optim as optim
+from torch import nn
 
 class Trainer():
     def __init__(
@@ -11,12 +13,13 @@ class Trainer():
         epochs,
         batch_size,
         valid_size,
+        pin_memory,
         output_dir,
     ):
         self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
         self.epochs = epochs
-        self.trainloader, self.validloader, self.testloader = dataloader.get_torch_loaders(valid_size, batch_size,
-                                                                pin_memory=(True if self.device == 'cuda' else False))
+        self.trainloader, self.validloader, self.testloader = dataloader.get_torch_loaders(valid_size,
+                                                                        batch_size, pin_memory)
         self.num_classes = dataloader.num_classes
         self.input_channels = self.trainloader.dataset.data.shape[-1]
         self.dataset_sizes = {
@@ -30,16 +33,19 @@ class Trainer():
 
         self.output_dir = output_dir
     
-    def train(self):
+    def train(self, plot: bool=True):
         optimizer = optim.SGD(self.model.parameters(), lr=0.1, momentum=0.9, weight_decay=0.0001)
         scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0.1, verbose=True)
 
-        best_model_wts = None
-        best_acc = 0.0
+        # storing the accuracy and weights of the best model (on valid dataset)
+        best_model_wts, best_acc = None, 0.0
+        training_history = {
+            'train': {'loss': [], 'acc': []},
+            'val': {'loss': [], 'acc': []}
+        }
 
         for epoch in range(self.epochs):
             print('Epoch {}/{}'.format(epoch, self.epochs - 1))
-            print('-' * 10)
             
             for phase in ['train', 'val']:
                 if phase == 'train':
@@ -49,8 +55,10 @@ class Trainer():
 
                 running_loss = 0.0
                 running_corrects = 0
+                current_data_loader = self.trainloader if phase == 'train' else self.testloader
 
-                for inputs, labels in (self.trainloader if phase == 'train' else self.testloader):
+                for _, (inputs, labels) in tqdm(enumerate(current_data_loader), total=len(current_data_loader),
+                                                desc=f'{phase}', ncols=80, leave=False):
                     inputs = inputs.to(self.device)
                     labels = labels.to(self.device)
 
@@ -73,6 +81,9 @@ class Trainer():
 
                 epoch_loss = running_loss / self.dataset_sizes[phase]
                 epoch_acc = running_corrects.double() / self.dataset_sizes[phase]
+                training_history[phase]['loss'].append(epoch_loss)
+                training_history[phase]['acc'].append(epoch_acc)
+
                 print('{} Loss: {:.4f} Acc: {:.4f}'.format(phase, epoch_loss, epoch_acc))
 
                 if phase == 'val':
@@ -87,3 +98,30 @@ class Trainer():
         # load best model weights
         self.model.load_state_dict(best_model_wts)
         torch.save(self.model.state_dict(), self.output_dir)
+
+        if plot:
+            Trainer.plot_training_history(training_history)
+
+    @staticmethod
+    def plot_training_history(history: dict):
+        TRAINING_COLOR, VALID_COLOR = '#58508d', '#ff6361'
+        epoch = range(len(history['train']['loss']))
+        y_max = max(history['train']['loss'] + history['valid']['loss'])
+
+        fig, axs = plt.subplots(2, 1, figsize=(12,8))
+        axs[0].plot(epoch, history['train']['loss'], '.-', label='Training', color=TRAINING_COLOR)
+        axs[0].plot(epoch, history['valid']['loss'], '.-', label='Validation', color=VALID_COLOR)
+        axs[0].set_ylim(0, y_max+.5)
+        axs[0].set_xlabel('Epoch')
+        axs[0].set_ylabel('Loss')
+        axs[0].legend()
+
+        axs[1].plot(epoch, history['train']['acc'], '.-', label='Training', color=TRAINING_COLOR)
+        axs[1].plot(epoch, history['valid']['acc'], '.-', label='Validation', color=VALID_COLOR)
+        axs[1].set_ylim(0, 1.1)
+        axs[1].set_xlabel('Epoch')
+        axs[1].set_ylabel('Accuracy')
+        axs[1].legend()
+
+        fig.tight_layout()
+        plt.show()
