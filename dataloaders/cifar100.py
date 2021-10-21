@@ -5,11 +5,10 @@ from torchvision import transforms
 from torchvision.datasets import CIFAR100
 
 class CIFAR_100_Loader:
-    NORMALIZATION_STATS = ((0.485, 0.456, 0.406),(0.229, 0.224, 0.225))
+    NORMALIZATION_STATS = ((0.507, 0.487, 0.441),(0.267, 0.256, 0.276))
     TRAIN_TRANSFORM = transforms.Compose([
-                        transforms.RandomChoice([transforms.Resize(256), transforms.Resize(480)]),
+                        transforms.RandomCrop(32, padding=4),
                         transforms.RandomHorizontalFlip(),
-                        transforms.RandomCrop(224),
                         transforms.ToTensor(),
                         transforms.Normalize(*NORMALIZATION_STATS),
                     ])

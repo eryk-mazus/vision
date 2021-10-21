@@ -97,7 +97,7 @@ class Trainer():
         
         # load best model weights
         self.model.load_state_dict(best_model_wts)
-        torch.save(self.model.state_dict(), self.output_dir)
+        torch.save(self.model.state_dict(), f'{self.output_dir}cifar_resnet.pth')
 
         if plot:
             Trainer.plot_training_history(training_history)
@@ -106,18 +106,18 @@ class Trainer():
     def plot_training_history(history: dict):
         TRAINING_COLOR, VALID_COLOR = '#58508d', '#ff6361'
         epoch = range(len(history['train']['loss']))
-        y_max = max(history['train']['loss'] + history['valid']['loss'])
+        y_max = max(history['train']['loss'] + history['val']['loss'])
 
         fig, axs = plt.subplots(2, 1, figsize=(12,8))
         axs[0].plot(epoch, history['train']['loss'], '.-', label='Training', color=TRAINING_COLOR)
-        axs[0].plot(epoch, history['valid']['loss'], '.-', label='Validation', color=VALID_COLOR)
+        axs[0].plot(epoch, history['val']['loss'], '.-', label='Validation', color=VALID_COLOR)
         axs[0].set_ylim(0, y_max+.5)
         axs[0].set_xlabel('Epoch')
         axs[0].set_ylabel('Loss')
         axs[0].legend()
 
         axs[1].plot(epoch, history['train']['acc'], '.-', label='Training', color=TRAINING_COLOR)
-        axs[1].plot(epoch, history['valid']['acc'], '.-', label='Validation', color=VALID_COLOR)
+        axs[1].plot(epoch, history['val']['acc'], '.-', label='Validation', color=VALID_COLOR)
         axs[1].set_ylim(0, 1.1)
         axs[1].set_xlabel('Epoch')
         axs[1].set_ylabel('Accuracy')
