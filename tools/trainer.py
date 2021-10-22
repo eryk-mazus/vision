@@ -12,19 +12,17 @@ class Trainer():
         model,
         epochs,
         batch_size,
-        valid_size,
         pin_memory,
         output_dir,
     ):
         self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
         self.epochs = epochs
-        self.trainloader, self.validloader, self.testloader = dataloader.get_torch_loaders(valid_size,
-                                                                        batch_size, pin_memory)
+        self.trainloader, self.testloader = dataloader.get_torch_loaders(batch_size, pin_memory)
         self.num_classes = dataloader.num_classes
         self.input_channels = self.trainloader.dataset.data.shape[-1]
         self.dataset_sizes = {
             'train': dataloader.train_size,
-            'val': dataloader.valid_size
+            'val': dataloader.test_size
         }
 
         self.model = model(self.input_channels, self.num_classes)

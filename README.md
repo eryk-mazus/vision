@@ -1,9 +1,9 @@
 # Title
 desc
 
-# Setup
+## Setup
 
-# Resources
+## Resources
 
 https://arxiv.org/pdf/1512.03385.pdf
 
@@ -13,4 +13,7 @@ https://ngc.nvidia.com/catalog/resources/nvidia:resnet_50_v1_5_for_pytorch
 ## TODO:
 - [ ] More verbose prints/logs
 - [ ] Silent torch's UserWarnings
-- [ ] Setup
+- [ ] Setup in README
+
+- [ ] abc class for dataloaders
+- [ ] unify cifar100 and image net

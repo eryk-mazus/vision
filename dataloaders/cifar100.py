@@ -14,7 +14,7 @@ class CIFAR_100_Loader:
                     ])
     TEST_TRANSFORM = transforms.Compose([transforms.ToTensor(), transforms.Normalize(*NORMALIZATION_STATS)])
 
-    def __init__(self) -> None:
+    def __init__(self):
         self.train_set = CIFAR100(root='./data', train=True, download=True, transform=CIFAR_100_Loader.TRAIN_TRANSFORM)
         self.valid_set = CIFAR100(root='./data', train=True, download=True, transform=CIFAR_100_Loader.TEST_TRANSFORM)
         self.test_set = CIFAR100(root='./data', train=False, download=True, transform=CIFAR_100_Loader.TEST_TRANSFORM)
