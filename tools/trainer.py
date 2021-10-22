@@ -113,6 +113,7 @@ class Trainer():
         axs[0].set_xlabel('Epoch')
         axs[0].set_ylabel('Loss')
         axs[0].legend()
+        axs[0].grid()
 
         axs[1].plot(epoch, history['train']['acc'], '.-', label='Training', color=TRAINING_COLOR)
         axs[1].plot(epoch, history['val']['acc'], '.-', label='Validation', color=VALID_COLOR)
@@ -120,6 +121,8 @@ class Trainer():
         axs[1].set_xlabel('Epoch')
         axs[1].set_ylabel('Accuracy')
         axs[1].legend()
+        axs[1].grid()
 
         fig.tight_layout()
+
         plt.savefig(f'{self.output_dir}training.png')

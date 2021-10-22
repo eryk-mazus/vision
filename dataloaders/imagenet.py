@@ -21,9 +21,6 @@ class ImageNet_Loader:
     def __init__(self):
         self.train_set = ImageNet(root='./data', split='train', download=True, transform=ImageNet_Loader.TRAIN_TRANSFORM)
         self.test_set = ImageNet(root='./data', split='val', download=True, transform=ImageNet_Loader.TEST_TRANSFORM)
-        
-        self.__train_size = None
-        self.__test_size = None
     
     @property
     def num_classes(self):
@@ -31,11 +28,11 @@ class ImageNet_Loader:
 
     @property
     def train_size(self):
-        return self.__train_size
+        return len(self.train_set)
 
     @property
-    def test_size(self):
-        return self.__test_size
+    def valid_size(self):
+        return len(self.test_set)
     
     def get_torch_loaders(self, batch_size: int=32, pin_memory: bool=False):
         train_loader = torch.utils.data.DataLoader(

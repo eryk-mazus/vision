@@ -7,7 +7,7 @@ sys.path.append(os.path.abspath(os.path.join(__dir__, '../')))
 
 from tools.trainer import Trainer
 from tools.model_zoo import get_arch
-from dataloaders.imagenet import ImageNet_Loader
+from dataloaders.cifar100 import CIFAR_100_Loader
 
 parser = argparse.ArgumentParser()
 parser.add_argument("model", type=str,
@@ -24,8 +24,8 @@ args = parser.parse_args()
 
 
 if __name__ == "__main__":
-    imagenet_loader = ImageNet_Loader()
+    data_loader = CIFAR_100_Loader()
     model = get_arch(args.model)
-    trainer = Trainer(imagenet_loader, model, args.epochs, args.batch_size,
+    trainer = Trainer(data_loader, model, args.epochs, args.batch_size,
                       args.pin_memory, args.output_dir)
     trainer.train()
