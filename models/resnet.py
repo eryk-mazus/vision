@@ -27,6 +27,13 @@ class ResidualLayer(nn.Module):
             self.downsample = ShortcutProjection(in_channels, out_channels, stride)
         else:
             self.downsample = nn.Identity()
+        # inits
+        torch.nn.init.kaiming_normal_(self.conv1.weight, nonlinearity='relu')
+        torch.nn.init.kaiming_normal_(self.conv2.weight, nonlinearity='relu')
+        torch.nn.init.constant_(self.bn1.weight, 0.5)
+        torch.nn.init.zeros_(self.bn1.bias)
+        torch.nn.init.constant_(self.bn2.weight, 0.5)
+        torch.nn.init.zeros_(self.bn2.bias)
 
     def forward(self, x):
         shortcut = self.downsample(x)
@@ -51,6 +58,16 @@ class BottleneckLayer(nn.Module):
             self.downsample = ShortcutProjection(in_channels, self.out_channels, stride)
         else:
             self.downsample = nn.Identity()
+        # inits
+        torch.nn.init.kaiming_normal_(self.conv1.weight, nonlinearity='relu')
+        torch.nn.init.kaiming_normal_(self.conv2.weight, nonlinearity='relu')
+        torch.nn.init.kaiming_normal_(self.conv3.weight, nonlinearity='relu')
+        torch.nn.init.constant_(self.bn1.weight, 0.5)
+        torch.nn.init.zeros_(self.bn1.bias)
+        torch.nn.init.constant_(self.bn2.weight, 0.5)
+        torch.nn.init.zeros_(self.bn2.bias)
+        torch.nn.init.constant_(self.bn3.weight, 0.5)
+        torch.nn.init.zeros_(self.bn3.bias)
     
     def forward(self, x):
         shortcut = self.downsample(x)
@@ -69,6 +86,10 @@ class ResNet(nn.Module):
         self.bn = nn.BatchNorm2d(64)
         self.relu = nn.ReLU(inplace=True)
         self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2, padding=1)
+        # inits
+        torch.nn.init.kaiming_normal_(self.conv.weight, nonlinearity='relu')
+        torch.nn.init.constant_(self.bn.weight, 0.5)
+        torch.nn.init.zeros_(self.bn.bias)
 
         blocks = []
         prev_channels = n_channels[0]

@@ -101,6 +101,7 @@ class Trainer():
 
         if plot:
             self.plot_training_history(training_history)
+        print('The highest validation Acc: {:.4f}'.format(best_acc))
 
     def plot_training_history(self, history: dict):
         TRAINING_COLOR, VALID_COLOR = '#58508d', '#ff6361'
