@@ -100,10 +100,9 @@ class Trainer():
         torch.save(self.model.state_dict(), f'{self.output_dir}cifar_resnet.pth')
 
         if plot:
-            Trainer.plot_training_history(training_history)
+            self.plot_training_history(training_history)
 
-    @staticmethod
-    def plot_training_history(history: dict):
+    def plot_training_history(self, history: dict):
         TRAINING_COLOR, VALID_COLOR = '#58508d', '#ff6361'
         epoch = range(len(history['train']['loss']))
         y_max = max(history['train']['loss'] + history['val']['loss'])
@@ -124,4 +123,4 @@ class Trainer():
         axs[1].legend()
 
         fig.tight_layout()
-        plt.show()
+        plt.savefig(f'{self.output_dir}training.png')
